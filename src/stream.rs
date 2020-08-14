@@ -51,6 +51,8 @@ impl UnixStream {
         unsafe {
             let (addr, len) = try!(sockaddr_un(path));
             let socket = try!(Socket::new(libc::SOCK_STREAM));
+            assert!((libc::fcntl(socket.fd(), libc::F_GETFL, 0) & libc::O_NONBLOCK) != 0);
+
             let addr = &addr as *const _ as *const _;
             match cvt(libc::connect(socket.fd(), addr, len)) {
                 Ok(_) => {}
